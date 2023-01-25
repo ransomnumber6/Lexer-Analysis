@@ -113,7 +113,9 @@ Token LexicalAnalyzer::ScanNumber()
                     input.UngetChar(c);
                 }
                 tmp.token_type = REALNUM;
-            } else {
+
+            } 
+            else {
                 if (!input.EndOfInput()) {
                     input.UngetChar(c);
                 }
@@ -134,7 +136,7 @@ Token LexicalAnalyzer::ScanNumber()
                     tmp.lexeme += c;
                     input.GetChar(c);
                 }
-                if(input.EndOfInput())
+                if(!input.EndOfInput())
                 {
                     input.UngetChar(c);
                 }
@@ -150,7 +152,7 @@ Token LexicalAnalyzer::ScanNumber()
                     tmp.lexeme += c;
                     input.GetChar(c);
                 }
-                if(input.EndOfInput())
+                if(!input.EndOfInput())
                 {
                     input.UngetChar(c);
                 }

@@ -1,0 +1,6 @@
+test/
+*.out
+*.docx
+*.identifier
+*.sh
+test.cpp
