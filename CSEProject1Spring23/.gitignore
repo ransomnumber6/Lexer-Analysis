@@ -1,4 +1,5 @@
-tests/
+/tests/
+/cmake-build-debug
 *.out
 *.docx
 *.identifier
