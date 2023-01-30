@@ -138,15 +138,9 @@ Token LexicalAnalyzer::ScanNumber()
                     tmp.token_type = BASE08NUM;
                 }
                 else if(c != '8')
-                {
+                {   input.UngetChar('0');
                     tmp.lexeme += c;
                     tmp.token_type = NUM;
-                    input.GetChar(c);
-                    if(isalpha(c))
-                    {
-                        tmp.lexeme+=c;
-                        tmp.token_type = ID;
-                    }
                 }
                 if(!input.EndOfInput())
                 {
