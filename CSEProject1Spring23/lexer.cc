@@ -125,38 +125,59 @@ Token LexicalAnalyzer::ScanNumber()
         }
         else if(c == 'x')
         {
-            tmp.lexeme += c;
             input.GetChar(c);
             if(c == '0')
             {
-                tmp.lexeme+=c;
                 input.GetChar(c);
                 if(c == '8')
                 {
-                    tmp.lexeme += c;
+                    tmp.lexeme += 'x';
+                    tmp.lexeme += '0';
+                    tmp.lexeme += '8';
                     input.GetChar(c);
+                    tmp.token_type = BASE08NUM;
+                }
+                else if(c != '8')
+                {
+                    tmp.lexeme += c;
+                    tmp.token_type = NUM;
+                    input.GetChar(c);
+                    if(isalpha(c))
+                    {
+                        tmp.lexeme+=c;
+                        tmp.token_type = ID;
+                    }
                 }
                 if(!input.EndOfInput())
                 {
                     input.UngetChar(c);
                 }
-                tmp.token_type = BASE08NUM;
+                
                 
             }
             else if(c == '1')
             {
-                tmp.lexeme+=c;
                 input.GetChar(c);
                 if(c == '6')
                 {
-                    tmp.lexeme += c;
+                    tmp.lexeme += 'x';
+                    tmp.lexeme += '1';
+                    tmp.lexeme += '6';
                     input.GetChar(c);
+                    tmp.token_type = BASE16NUM;
                 }
                 if(!input.EndOfInput())
                 {
                     input.UngetChar(c);
                 }
-                tmp.token_type = BASE16NUM;
+                
+            }
+            else {
+                if (!input.EndOfInput()) {
+                    input.UngetChar(c);
+                }
+                input.UngetChar('.');
+                tmp.token_type = NUM;
             }
         }
         else {                        // if no DOT then and is a digit then it is a NUM
@@ -164,8 +185,8 @@ Token LexicalAnalyzer::ScanNumber()
                 input.UngetChar(c);
             tmp.token_type = NUM;
         }
-        return tmp;
     }
+    return tmp;
 }
 
 Token LexicalAnalyzer::ScanIdOrKeyword()
