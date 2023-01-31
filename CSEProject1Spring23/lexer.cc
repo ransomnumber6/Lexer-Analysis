@@ -173,12 +173,21 @@ Token LexicalAnalyzer::ScanNumber()
                 input.UngetChar('x');
             }
         }
-        else {                        // if no DOT then and is a digit then it is a NUM
+        else{                        // if no DOT then and is a digit then it is a NUM
             if (!input.EndOfInput())
                 input.UngetChar(c);
             tmp.token_type = NUM;
         }
-    }
+    } 
+    // if(c=='A'|| c == 'B' || c == 'C' || c == 'D' || c == 'E')
+    // {
+    //     input.GetChar(c);
+    //     while(c=='A'|| c == 'B' || c == 'C' || c == 'D' || c == 'E')
+    //     {
+            
+    //     }
+        
+    // }
     return tmp;
 }
 
