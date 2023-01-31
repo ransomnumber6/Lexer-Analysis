@@ -122,6 +122,7 @@ Token LexicalAnalyzer::ScanNumber()
                 input.UngetChar('.');
                 tmp.token_type = NUM;
             }
+            return tmp;
         }
         else if(c == 'x')
         {
@@ -137,15 +138,14 @@ Token LexicalAnalyzer::ScanNumber()
                     input.GetChar(c);
                     tmp.token_type = BASE08NUM;
                 }
-                else if(c != '8')
-                {   input.UngetChar('0');
-                    tmp.lexeme += c;
+                else {
+                    input.UngetChar(c);
+                    input.UngetChar(c);
                     tmp.token_type = NUM;
                 }
-                if(!input.EndOfInput())
-                {
+                if (!input.EndOfInput()) {
                     input.UngetChar(c);
-                }
+                }          
                 
                 
             }
@@ -170,8 +170,7 @@ Token LexicalAnalyzer::ScanNumber()
                 if (!input.EndOfInput()) {
                     input.UngetChar(c);
                 }
-                input.UngetChar('.');
-                tmp.token_type = NUM;
+                input.UngetChar('x');
             }
         }
         else {                        // if no DOT then and is a digit then it is a NUM

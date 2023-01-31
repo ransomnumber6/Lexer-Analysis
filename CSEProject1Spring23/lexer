@@ -36658,45 +36658,57 @@ Token LexicalAnalyzer::ScanNumber()
                 input.UngetChar('.');
                 tmp.token_type = NUM;
             }
+            return tmp;
         }
         else if(c == 'x')
         {
-            tmp.lexeme += c;
             input.GetChar(c);
             if(c == '0')
             {
-                tmp.lexeme+=c;
                 input.GetChar(c);
                 if(c == '8')
                 {
-                    tmp.lexeme += c;
+                    tmp.lexeme += 'x';
+                    tmp.lexeme += '0';
+                    tmp.lexeme += '8';
                     input.GetChar(c);
+                    tmp.token_type = BASE08NUM;
                 }
-                else if(c != '8')
-                {
+                else {
+                    input.UngetChar(c);
+                    input.UngetChar(c);
+                    tmp.lexeme += c;
+                    tmp.token_type = NUM;
+                if (!input.EndOfInput()) {
                     input.UngetChar(c);
                 }
-                if(!input.EndOfInput())
-                {
-                    input.UngetChar(c);
-                }
-                tmp.token_type = BASE08NUM;
+            }
+
 
             }
             else if(c == '1')
             {
-                tmp.lexeme+=c;
                 input.GetChar(c);
                 if(c == '6')
                 {
-                    tmp.lexeme += c;
+                    tmp.lexeme += 'x';
+                    tmp.lexeme += '1';
+                    tmp.lexeme += '6';
                     input.GetChar(c);
+                    tmp.token_type = BASE16NUM;
                 }
                 if(!input.EndOfInput())
                 {
                     input.UngetChar(c);
                 }
-                tmp.token_type = BASE16NUM;
+
+            }
+            else {
+                if (!input.EndOfInput()) {
+                    input.UngetChar(c);
+                }
+                input.UngetChar('.');
+                tmp.token_type = NUM;
             }
         }
         else {
@@ -36736,7 +36748,7 @@ Token LexicalAnalyzer::ScanIdOrKeyword()
     }
     return tmp;
 }
-# 220 "/home/trevor/CSE340-Project-1/CSEProject1Spring23/lexer.cc"
+# 232 "/home/trevor/CSE340-Project-1/CSEProject1Spring23/lexer.cc"
 TokenType LexicalAnalyzer::UngetToken(Token tok)
 {
     tokens.push_back(tok);;
