@@ -92,18 +92,18 @@ Token LexicalAnalyzer::ScanNumber()
         
          else {
             tmp.lexeme = "";
-            while (!input.EndOfInput() && isdigit(c)) {
+            while (!input.EndOfInput() && isdigit(c)) {     // while input is digit add to lexeme - Trevor R.
                 tmp.lexeme += c;
                 input.GetChar(c);
             }
-            if (!input.EndOfInput()) {
-                input.UngetChar(c);
+            if (!input.EndOfInput()) { 
+                input.UngetChar(c);                         // put character that is not a digit back into input - Trevor R.
             }
         }
-        input.GetChar(c);
-        if (c == '.') {           // checks if DOT is in c if so then probably REALNUM
+        input.GetChar(c);      
+        if (c == '.') {                                     // checks if DOT is in c if so then more than likely REALNUM - Trevor R.
             input.GetChar(c);
-            if (isdigit(c)) {     // if it is a digit is a REALNUM
+            if (isdigit(c)) {                               // if DOT is followed by a digit it is a REALNUM - Trevor R.
                 tmp.lexeme += '.';
                 while (isdigit(c)) {
                     tmp.lexeme += c;
@@ -115,7 +115,7 @@ Token LexicalAnalyzer::ScanNumber()
                 tmp.token_type = REALNUM;
 
             } 
-            else {
+            else {                                          // if not a DOT and not at the end of input put the char back - Trevor R.
                 if (!input.EndOfInput()) {
                     input.UngetChar(c);
                 }
@@ -124,20 +124,20 @@ Token LexicalAnalyzer::ScanNumber()
             }
             return tmp;
         }
-        else if(c == 'x')
+        else if(c == 'x')                                   // if character is an x than check if it is a BASE08 num - Trevor R.
         {
             input.GetChar(c);
             if(c == '0')
             {
                 input.GetChar(c);
-                if(c == '8')
+                if(c == '8')                                // If the x is followed by 08 then it is a BASE08NUM - Trevor R.
                 {
                     tmp.lexeme += 'x';
                     tmp.lexeme += '0';
                     tmp.lexeme += '8';
                     tmp.token_type = BASE08NUM;
                 }
-                else if(c != '8'){
+                else if(c != '8'){                          // If x0 is followed by something other than 8 it is not a BASE08NUM and may be an ID - Trevor R.
                     input.UngetChar(c);
                     input.UngetChar(c);
                     tmp.token_type = NUM;
@@ -145,10 +145,8 @@ Token LexicalAnalyzer::ScanNumber()
                         input.UngetChar('x');
                     }     
                 }     
-                
-                
             }
-            else if(c == '1')
+            else if(c == '1')                               // Check if x is followed by a 16 to see if it is a BASE16NUM - Trevor R.
             {
                 input.GetChar(c);
                 if(c == '6')
@@ -169,10 +167,9 @@ Token LexicalAnalyzer::ScanNumber()
                 if (!input.EndOfInput()) {
                     input.UngetChar(c);
                 }
-                //input.UngetChar(c);
             }
         }
-        else{                        // if no DOT then and is a digit then it is a NUM
+        else{                        // if no condition is met above it is a NUM - Trevor R.
             if (!input.EndOfInput())
                 input.UngetChar(c);
             tmp.token_type = NUM;
