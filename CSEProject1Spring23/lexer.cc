@@ -135,17 +135,16 @@ Token LexicalAnalyzer::ScanNumber()
                     tmp.lexeme += 'x';
                     tmp.lexeme += '0';
                     tmp.lexeme += '8';
-                    input.GetChar(c);
                     tmp.token_type = BASE08NUM;
                 }
-                else {
+                else if(c != '8'){
                     input.UngetChar(c);
                     input.UngetChar(c);
                     tmp.token_type = NUM;
-                }
-                if (!input.EndOfInput()) {
-                    input.UngetChar(c);
-                }          
+                    if (!input.EndOfInput()) {
+                        input.UngetChar('x');
+                    }     
+                }     
                 
                 
             }
@@ -170,7 +169,7 @@ Token LexicalAnalyzer::ScanNumber()
                 if (!input.EndOfInput()) {
                     input.UngetChar(c);
                 }
-                input.UngetChar('x');
+                //input.UngetChar(c);
             }
         }
         else{                        // if no DOT then and is a digit then it is a NUM
@@ -178,16 +177,13 @@ Token LexicalAnalyzer::ScanNumber()
                 input.UngetChar(c);
             tmp.token_type = NUM;
         }
-    } 
+    // } 
     // if(c=='A'|| c == 'B' || c == 'C' || c == 'D' || c == 'E')
     // {
     //     input.GetChar(c);
     //     while(c=='A'|| c == 'B' || c == 'C' || c == 'D' || c == 'E')
-    //     {
-            
-    //     }
         
-    // }
+    }
     return tmp;
 }
 
