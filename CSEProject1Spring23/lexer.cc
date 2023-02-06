@@ -170,31 +170,68 @@ Token LexicalAnalyzer::ScanNumber()
                 }
             }
         }
-        // else if(c == 'A' || c == 'B' || c == 'D' || c == 'E' || c == 'F')
-        // {
-        //     input.UngetString(tmp.lexeme); 
-        //     input.GetChar(c); 
-        //     while(c != 'x')
-        //     {
-        //         tmp.lexeme = tmp.lexeme + c;
-        //         input.GetChar(c);
-        //     }
-        //     if(c == 'x')
-        //     {
-        //         input.GetChar(c);
-        //         if(c == '1')
-        //         {
-        //             input.GetChar(c);
-        //             if(c == '6')
-        //             {
-        //                 tmp.token_type = BASE16NUM;
-        //             }
-        //             else{
-        //                 input.UngetString(tmp.lexeme); 
-        //             }
-        //         }
-        //     }
-        // }
+        else if(c == 'A' || c == 'B' || c == 'D' || c == 'E' || c == 'F' || c == 'C' )
+        {
+            //input.UngetString(tmp.lexeme); 
+            tmp.lexeme = tmp.lexeme + c;
+            input.GetChar(c); 
+            while(c == 'A' || c == 'B' || c == 'D' || c == 'E' || c == 'F' || c == 'C')
+            {
+                tmp.lexeme = tmp.lexeme + c;
+                input.GetChar(c);
+            }
+            if(isdigit(c))
+            {
+                tmp.lexeme = tmp.lexeme + c;
+                input.GetChar(c);
+                if(c =='x')
+                {
+                    tmp.lexeme = tmp.lexeme + c;
+                    input.GetChar(c);
+                    if(c == '1')
+                    {
+                        tmp.lexeme = tmp.lexeme + c;
+                        input.GetChar(c);
+                        if(c == '6')
+                        {
+                            tmp.lexeme = tmp.lexeme + c;                        
+                            tmp.token_type = BASE16NUM;
+                        }
+                        else{
+                            if (!input.EndOfInput()) {
+                            input.UngetChar(c);
+                            }
+                        }
+                    }
+                }
+            }
+            else if(c == 'x')
+            {
+                tmp.lexeme = tmp.lexeme + c;
+                    input.GetChar(c);
+                    if(c == '1')
+                    {
+                        tmp.lexeme = tmp.lexeme + c;
+                        input.GetChar(c);
+                        if(c == '6')
+                        {
+                            tmp.lexeme = tmp.lexeme + c;                        
+                            tmp.token_type = BASE16NUM;
+                        }
+                        else{
+                            if (!input.EndOfInput()) {
+                            input.UngetChar(c);
+                            }
+                        }
+                    }
+            }
+            else{                        // if no condition is met above it is a NUM - Trevor R.
+                if (!input.EndOfInput())
+                {
+                    input.UngetChar(c);
+                }
+            }
+        }
         else{                        // if no condition is met above it is a NUM - Trevor R.
             if (!input.EndOfInput())
                 input.UngetChar(c);
