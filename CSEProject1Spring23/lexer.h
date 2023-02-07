@@ -48,6 +48,9 @@ class LexicalAnalyzer {
     TokenType FindKeywordIndex(std::string);
     Token ScanIdOrKeyword();
     Token ScanNumber();
+    Token RealNum();
+    Token BaseNum();
+    Token Base16();
 };
 
 #endif  //__LEXER__H__

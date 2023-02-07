@@ -25,6 +25,7 @@ string reserved[] = { "END_OF_FILE",
 
 #define KEYWORDS_COUNT 5
 string keyword[] = { "IF", "WHILE", "DO", "THEN", "PRINT" };
+
 void Token::Print()
 {
     cout << "{" << this->lexeme << " , "
@@ -82,15 +83,28 @@ TokenType LexicalAnalyzer::FindKeywordIndex(string s)
 
 Token LexicalAnalyzer::ScanNumber()
 {
+    Token num = RealNum();
+    if (num.token_type == REALNUM) {
+    	return num;
+    }
+    
+    num = BaseNum();
+    if (num.token_type == BASE08NUM) {
+    	return num;
+    }
+    
+    num = Base16();
+    if (num.token_type == BASE16NUM) {
+    	return num;
+    } 
+    
     char c;
 
     input.GetChar(c);
     if (isdigit(c)) {
         if (c == '0') {
             tmp.lexeme = "0";
-        }
-        
-         else {
+        } else {
             tmp.lexeme = "";
             while (!input.EndOfInput() && isdigit(c)) {
                 tmp.lexeme += c;
@@ -100,68 +114,17 @@ Token LexicalAnalyzer::ScanNumber()
                 input.UngetChar(c);
             }
         }
-        input.GetChar(c);
-        if (c == '.') {           // checks if DOT is in c if so then probably REALNUM
-            input.GetChar(c);
-            if (isdigit(c)) {     // if it is a digit is a REALNUM
-                tmp.lexeme += '.';
-                while (isdigit(c)) {
-                    tmp.lexeme += c;
-                    input.GetChar(c);
-                }
-                if (!input.EndOfInput()) {
-                    input.UngetChar(c);
-                }
-                tmp.token_type = REALNUM;
-            } else {
-                if (!input.EndOfInput()) {
-                    input.UngetChar(c);
-                }
-                input.UngetChar('.');
-                tmp.token_type = NUM;
-            }
+        tmp.token_type = NUM;
+        // TODO: You can check for REALNUM, BASE08NUM and BASE16NUM here!
+        tmp.line_no = line_no;
+        return tmp;
+    } else {
+        if (!input.EndOfInput()) {
+            input.UngetChar(c);
         }
-        else if(c == 'x')
-        {
-            tmp.lexeme += c;
-            input.GetChar(c);
-            if(c == '0')
-            {
-                tmp.lexeme+=c;
-                input.GetChar(c);
-                if(c == '8')
-                {
-                    tmp.lexeme += c;
-                    input.GetChar(c);
-                }
-                if(input.EndOfInput())
-                {
-                    input.UngetChar(c);
-                }
-                tmp.token_type = BASE08NUM;
-                
-            }
-            else if(c == '1')
-            {
-                tmp.lexeme+=c;
-                input.GetChar(c);
-                if(c == '6')
-                {
-                    tmp.lexeme += c;
-                    input.GetChar(c);
-                }
-                if(input.EndOfInput())
-                {
-                    input.UngetChar(c);
-                }
-                tmp.token_type = BASE16NUM;
-            }
-        }
-        else {                        // if no DOT then and is a digit then it is a NUM
-            if (!input.EndOfInput())
-                input.UngetChar(c);
-            tmp.token_type = NUM;
-        }
+        tmp.lexeme = "";
+        tmp.token_type = ERROR;
+        tmp.line_no = line_no;
         return tmp;
     }
 }
@@ -195,6 +158,191 @@ Token LexicalAnalyzer::ScanIdOrKeyword()
     return tmp;
 }
 
+Token LexicalAnalyzer::RealNum()
+{
+ Token tmp;
+ vector<char> charCount;
+ char c;
+
+    input.GetChar(c);
+    if (isdigit(c)) {
+        if (c == '0') {
+            tmp.lexeme = "0";
+        } else {
+            tmp.lexeme = "";
+            while (!input.EndOfInput() && isdigit(c)) {
+                tmp.lexeme += c;
+               	charCount.push_back(c);
+                input.GetChar(c);
+            }
+            if (!input.EndOfInput()) {
+                input.UngetChar(c);
+            }
+        }
+        input.GetChar(c);
+        if (!input.EndOfInput()) {
+        	charCount.push_back(c);
+        }
+        if (c == '.') {
+        	tmp.lexeme += '.';
+        	input.GetChar(c);
+        	charCount.push_back(c);
+        	if (isdigit(c)) {
+        		while (!input.EndOfInput() && isdigit(c)) {
+                		tmp.lexeme += c;
+                		input.GetChar(c);
+           	 	}	
+           	 	if (!input.EndOfInput()) {
+                		input.UngetChar(c);
+            		}
+        	} else {
+        		goto fail;
+        	}
+            	tmp.token_type = REALNUM;
+        } else {
+        	goto fail;
+        }
+        // TODO: You can check for REALNUM, BASE08NUM and BASE16NUM here!
+        tmp.line_no = line_no;
+        return tmp;
+    } else {
+        if (!input.EndOfInput()) {
+            input.UngetChar(c);
+        }
+        tmp.lexeme = "";
+        tmp.token_type = ERROR;
+        tmp.line_no = line_no;
+        return tmp;
+    }
+    fail: 
+    	for (int i = charCount.size() - 1; i >= 0; i--) {
+    		input.UngetChar(charCount[i]);
+    	}
+    	 tmp.token_type = ERROR;
+    	 return tmp;
+}
+
+int ispdigit8(char t) {
+	if (t >= '0' && t <= '7') {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+Token LexicalAnalyzer::BaseNum()
+{
+Token tmp;
+ vector<char> charCount;
+ char c;
+ 
+ input.GetChar(c);
+  if (ispdigit8(c)) {
+        if (c == '0') {
+            tmp.lexeme = "0";
+        } else {
+            tmp.lexeme = "";
+            while (!input.EndOfInput() && ispdigit8(c)) {
+                tmp.lexeme += c;
+               	charCount.push_back(c);
+                input.GetChar(c);
+            }
+
+            if (!input.EndOfInput()) {
+                input.UngetChar(c);
+            }
+        }
+        input.GetChar(c);
+        if (!input.EndOfInput()) {
+        	charCount.push_back(c);
+        }
+       	if (c == 'x') {
+       		tmp.lexeme += 'x';
+       		input.GetChar(c);
+       		charCount.push_back(c);
+       		if (c == '0') {
+       			tmp.lexeme += '0';
+       			input.GetChar(c);
+       			charCount.push_back(c);
+       			if (c == '8') {
+       				tmp.lexeme += '8';
+       				tmp.token_type = BASE08NUM;
+       				tmp.line_no = line_no;
+       				return tmp;
+       			}
+       		}
+       	}
+   } 
+   
+    fail: 
+    	for (int i = charCount.size() - 1; i >= 0; i--) {
+    		input.UngetChar(charCount[i]);
+    	}
+    	 tmp.token_type = ERROR;
+    	 return tmp;    	
+}
+
+int ispdigit16(char t) {
+	if (t >= '0' && t <= '9') {
+		return 1;
+	} else if (t >= 'A' && t <= 'F') {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+Token LexicalAnalyzer::Base16()
+{
+Token tmp;
+ vector<char> charCount;
+ char c;
+ 
+ input.GetChar(c);
+  if (ispdigit16(c)) {
+        if (c == '0') {
+            tmp.lexeme = "0";
+        } else {
+            tmp.lexeme = "";
+            while (!input.EndOfInput() && ispdigit16(c)) {
+                tmp.lexeme += c;
+               	charCount.push_back(c);
+                input.GetChar(c);
+            }
+
+            if (!input.EndOfInput()) {
+                input.UngetChar(c);
+            }
+        }
+        input.GetChar(c);
+        if (!input.EndOfInput()) {
+        	charCount.push_back(c);
+        }
+       	if (c == 'x') {
+       		tmp.lexeme += 'x';
+       		input.GetChar(c);
+       		charCount.push_back(c);
+       		if (c == '1') {
+       			tmp.lexeme += '1';
+       			input.GetChar(c);
+       			charCount.push_back(c);
+       			if (c == '6') {
+       				tmp.lexeme += '6';
+       				tmp.token_type = BASE16NUM;
+       				tmp.line_no = line_no;
+       				return tmp;
+       			}
+       		}
+       	}
+   } 
+   
+    fail: 
+    	for (int i = charCount.size() - 1; i >= 0; i--) {
+    		input.UngetChar(charCount[i]);
+    	}
+    	 tmp.token_type = ERROR;
+    	 return tmp;    	
+}
 // you should unget tokens in the reverse order in which they
 // are obtained. If you execute
 //
