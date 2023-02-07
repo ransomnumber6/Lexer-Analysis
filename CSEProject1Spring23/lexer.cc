@@ -152,8 +152,8 @@ Token LexicalAnalyzer::ScanNumber()
         //     if(!input.EndOfInput())
         //     {
         //         input.UngetChar(c);
-            }
-        }
+            // }
+        //}
         else if(c == 'x')                                   // if character is an x than check if it is a BASE08 num - Trevor R.
         {
             input.GetChar(c);
