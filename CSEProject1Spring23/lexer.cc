@@ -3,6 +3,12 @@
  *
  * Do not share this file with anyone
  */
+/*
+Students that worked on Project 1 
+Trevor Ransom
+Tanner Ward
+
+*/
 #include <iostream>
 #include <istream>
 #include <vector>
@@ -80,6 +86,16 @@ TokenType LexicalAnalyzer::FindKeywordIndex(string s)
     return ERROR;
 }
 
+// int ispdigit16(char t) {
+// 	if (t >= '0' && t <= '9') {
+// 		return 1;
+// 	} else if (t >= 'A' && t <= 'F') {
+// 		return 1;
+// 	} else {
+// 		return 0;
+// 	}
+// }
+
 Token LexicalAnalyzer::ScanNumber()
 {
     char c;
@@ -123,6 +139,20 @@ Token LexicalAnalyzer::ScanNumber()
                 tmp.token_type = NUM;
             }
             return tmp;
+        }
+        // else if(ispdigit16(c))
+        // {
+        //     tmp.lexeme += c;
+        //     input.GetChar(c);
+        //     while(ispdigit16(c))
+        //     {
+        //         tmp.lexeme += c;
+        //         input.GetChar(c);
+        //     }
+        //     if(!input.EndOfInput())
+        //     {
+        //         input.UngetChar(c);
+            }
         }
         else if(c == 'x')                                   // if character is an x than check if it is a BASE08 num - Trevor R.
         {
@@ -170,31 +200,6 @@ Token LexicalAnalyzer::ScanNumber()
                 }
             }
         }
-        // else if(c == 'A' || c == 'B' || c == 'D' || c == 'E' || c == 'F')
-        // {
-        //     input.UngetString(tmp.lexeme); 
-        //     input.GetChar(c); 
-        //     while(c != 'x')
-        //     {
-        //         tmp.lexeme = tmp.lexeme + c;
-        //         input.GetChar(c);
-        //     }
-        //     if(c == 'x')
-        //     {
-        //         input.GetChar(c);
-        //         if(c == '1')
-        //         {
-        //             input.GetChar(c);
-        //             if(c == '6')
-        //             {
-        //                 tmp.token_type = BASE16NUM;
-        //             }
-        //             else{
-        //                 input.UngetString(tmp.lexeme); 
-        //             }
-        //         }
-        //     }
-        // }
         else{                        // if no condition is met above it is a NUM - Trevor R.
             if (!input.EndOfInput())
                 input.UngetChar(c);
